@@ -1,7 +1,7 @@
 %{?_javapackages_macros:%_javapackages_macros}
 Name:           jmdns
 Version:        3.4.1
-Release:        7.2
+Release:        7.3
 Summary:        Java implementation of multi-cast DNS
 Group:          Development/Java
 # The project was originally developed under the GNU
