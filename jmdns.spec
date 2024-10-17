@@ -9,7 +9,7 @@ Group:          Development/Java
 # and re-released under the Apache License, Version 2.0.
 # See NOTICE.txt for more details
 License:        ASL 2.0 and LGPLv2+
-URL:            http://jmdns.sourceforge.net/
+URL:            https://jmdns.sourceforge.net/
 # sh create-tarball.sh
 Source0:        %{name}-%{version}.tar.gz
 Source1:        create-tarball.sh
