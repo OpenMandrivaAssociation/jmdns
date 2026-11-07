@@ -1,2 +1,4 @@
-sources:
+removed_sources:
   jmdns-3.4.1.tar.gz: f4f0a837c1ba294623d23a0443c22e21c7656b47
+sources:
+  jmdns-3.6.5.tar.gz: d17fd2eae5beeaab91677a070b318939060ce622
