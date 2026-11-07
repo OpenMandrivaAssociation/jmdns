@@ -64,6 +64,7 @@ for dep in list(root.iter(q("dependency"))):
 removed_plugins = 0
 removed_st = 0
 removed_manifest = 0
+removed_exec = 0
 for plugin in list(root.iter(q("plugin"))):
     art = plugin.find(q("artifactId"))
     if art is None:
@@ -87,14 +88,20 @@ for plugin in list(root.iter(q("plugin"))):
                 raise SystemExit("manifestFile parent missing")
             owner.remove(node)
             removed_manifest += 1
+        # An id-less jar execution is "default" and runs in addition to
+        # the lifecycle default-jar, so the second jar goal fails.
+        for executions in list(plugin.findall(q("executions"))):
+            plugin.remove(executions)
+            removed_exec += 1
 
-if removed_deps != 4 or slf4j != 1 or removed_plugins != 1 or removed_st != 2 or removed_manifest != 1:
+if removed_deps != 4 or slf4j != 1 or removed_plugins != 1 or removed_st != 2 or removed_manifest != 1 or removed_exec != 1:
     raise SystemExit(
         "edits deps " + str(removed_deps)
         + " slf4j " + str(slf4j)
         + " plugins " + str(removed_plugins)
         + " st " + str(removed_st)
         + " manifest " + str(removed_manifest)
+        + " exec " + str(removed_exec)
     )
 tree.write("pom.xml", encoding="utf-8", xml_declaration=True)
 text = Path("pom.xml").read_text(encoding="utf-8")
@@ -120,6 +127,11 @@ for needle in (
 compiler = text.split("<artifactId>maven-compiler-plugin</artifactId>", 1)[1].split("</plugin>", 1)[0]
 if "<source>" in compiler or "<target>" in compiler or "<release>${jvm.version}</release>" not in compiler:
     raise SystemExit("compiler configuration was not reduced to release")
+jar = text.split("<artifactId>maven-jar-plugin</artifactId>", 1)[1].split("</plugin>", 1)[0]
+if "<executions>" in jar or "<goal>jar</goal>" in jar or "manifestFile" in jar:
+    raise SystemExit("jar plugin still attaches a second jar")
+if "Automatic-Module-Name" not in jar or "javax.jmdns" not in jar:
+    raise SystemExit("jar plugin lost the module name")
 files = list(Path("src/main/java").rglob("*.java"))
 if len(files) != 59:
     raise SystemExit("unexpected java file count " + str(len(files)))
